@@ -1,0 +1,22 @@
+[package]
+name = "ze-challenge"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "ze_server"
+path = "src/server.rs"
+
+[[bin]]
+name = "ze_cli"
+path = "src/cli.rs"
+
+
+[dependencies]
+axum = "0.3"
+tokio = { version = "1", features = ["full"] }
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+dotenv = "0.15"
