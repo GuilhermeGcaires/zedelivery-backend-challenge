@@ -40,22 +40,22 @@ pub async fn insert_partners_from_file(pool: &PgPool) -> Result<(), Error> {
 
     let parsed_data: Partners = serde_json::from_str(&json_data).expect("Error parsing the JSON");
 
-    for pdv in parsed_data.pdvs {
-        // sqlx::query!(
-        //     r#"
-        //     INSERT INTO db.partners (id, trading_name, owner_name, document, coverage_area, address)
-        //     VALUES ($1, $2, $3, $4, $5, $6)
-        //     "#,
-        //     partner.id,
-        //     partner.tradingName,
-        //     partner.ownerName,
-        //     partner.document,
-        //     serde_json::to_string(&partner.coverageArea).unwrap(),
-        //     serde_json::to_string(&partner.address).unwrap()
-        // )
-        // .execute(pool)
-        // .await?;
-        println!("{:?}", &pdv.coverage_area)
+    for partner in parsed_data.pdvs {
+        sqlx::query!(
+            r#"
+            INSERT INTO db.partners (id, trading_name, owner_name, document, coverage_area, address)
+            VALUES ($1, $2, $3, $4, ST_GeomFromGeoJSON($5), ST_GeomFromGeoJSON($6))
+            "#,
+            partner.id.parse::<i32>().unwrap(),
+            partner.trading_name,
+            partner.owner_name,
+            partner.document,
+            serde_json::to_string(&partner.coverage_area).unwrap(),
+            serde_json::to_string(&partner.address).unwrap()
+        )
+        .execute(pool)
+        .await?;
+        // println!("{:?}", partner.coverage_area.coordinates);
     }
 
     Ok(())
