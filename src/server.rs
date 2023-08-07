@@ -1,4 +1,5 @@
 mod handler;
+mod models;
 mod route;
 
 use std::{
