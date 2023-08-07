@@ -1,5 +1,4 @@
 -- Add migration script here
-CREATE EXTENSION postgis;
 CREATE SCHEMA db;
 CREATE TABLE db.partners (
     id SERIAL PRIMARY KEY,

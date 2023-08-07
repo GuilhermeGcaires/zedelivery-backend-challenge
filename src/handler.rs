@@ -61,7 +61,7 @@ pub async fn get_partner_id(
         }
         Err(sqlx::Error::RowNotFound) => {
             let mut map = HashMap::new();
-            map.insert("message", format!("Not Found: {}", partner_id));
+            map.insert("message", format!("ID {} has not been found", partner_id));
 
             let json_string = serde_json::to_string(&map).unwrap();
 
@@ -72,11 +72,14 @@ pub async fn get_partner_id(
                 .unwrap()
         }
         Err(_) => {
-            let message = format!("Internal server error");
+            let mut map = HashMap::new();
+            map.insert("message", format!("Internal server error"));
+
+            let json_string = serde_json::to_string(&map).unwrap();
             Response::builder()
                 .status(StatusCode::INTERNAL_SERVER_ERROR)
                 .header("Content-Type", "application/json")
-                .body(message)
+                .body(json_string)
                 .unwrap()
         }
     }
