@@ -26,3 +26,9 @@ pub struct GeometryPoint {
     geo_type: String,
     coordinates: Vec<f64>,
 }
+
+#[derive(Deserialize)]
+pub struct Location {
+    pub long: f64,
+    pub lat: f64,
+}
