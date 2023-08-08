@@ -28,8 +28,6 @@ async fn main() {
         .await
         .expect("could not connect to database url");
 
-    println!("{:?}", pool);
-
     let state_pool = Arc::new(pool);
 
     let app = create_router(state_pool);

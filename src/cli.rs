@@ -55,7 +55,6 @@ pub async fn insert_partners_from_file(pool: &PgPool) -> Result<(), Error> {
         )
         .execute(pool)
         .await?;
-        // println!("{:?}", partner.coverage_area.coordinates);
     }
 
     Ok(())
@@ -71,7 +70,5 @@ async fn main() {
         .expect("Failed to create pool");
 
     // Call the insert function
-    if let Err(error) = insert_partners_from_file(&pool).await {
-        eprintln!("Error inserting partners: {}", error);
-    }
+    if let Err(error) = insert_partners_from_file(&pool).await {}
 }

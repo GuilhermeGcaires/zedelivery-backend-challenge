@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use axum::{
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::StatusCode,
     response::{IntoResponse, Response},
     Json,
@@ -161,7 +161,7 @@ pub async fn create_partner(State(ctx): State<Conn>, Json(pdv): Json<Pdv>) -> im
 
 pub async fn find_nearest_partner(
     State(ctx): State<Conn>,
-    Path(location): Path<Location>,
+    Query(location): Query<Location>,
 ) -> Response<String> {
     let partner = sqlx::query!(
         r#"
@@ -185,7 +185,6 @@ pub async fn find_nearest_partner(
     )
     .fetch_one(&*ctx)
     .await;
-    println!("{partner:?}");
 
     match partner {
         Ok(record) => {
