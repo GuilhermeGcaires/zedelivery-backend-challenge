@@ -100,11 +100,62 @@ pub async fn create_partner(State(ctx): State<Conn>, Json(pdv): Json<Pdv>) -> im
     )
     .execute(&*ctx)
     .await;
-    println!("{:?}", result);
 
     match result {
-        Ok(_) => Ok(Json("Inserted successfully")),
-        Err(_) => Err(axum::http::StatusCode::INTERNAL_SERVER_ERROR.into_response()),
+        Ok(_) => {
+            let mut map = HashMap::new();
+            map.insert("message", format!("Insert has been successful"));
+
+            let json_string = serde_json::to_string(&map).unwrap();
+
+            Response::builder()
+                .status(StatusCode::OK)
+                .header("Content-Type", "application/json")
+                .body(json_string)
+                .unwrap()
+        }
+        Err(sqlx::Error::Database(err)) => {
+            println!("{:?}", err.message());
+            if err.message().contains("partners_pkey") {
+                let mut map = HashMap::new();
+                map.insert("message", format!("ID already exists"));
+
+                let json_string = serde_json::to_string(&map).unwrap();
+                Response::builder()
+                    .status(StatusCode::BAD_REQUEST)
+                    .header("Content-Type", "application/json")
+                    .body(json_string)
+                    .unwrap()
+            } else if err.message().contains("document") {
+                let mut map = HashMap::new();
+                map.insert("message", format!("Document must be unique"));
+
+                let json_string = serde_json::to_string(&map).unwrap();
+                Response::builder()
+                    .status(StatusCode::BAD_REQUEST)
+                    .header("Content-Type", "application/json")
+                    .body(json_string)
+                    .unwrap()
+            } else {
+                let mut map = HashMap::new();
+                map.insert("message", format!("Internal Server Error"));
+
+                let json_string = serde_json::to_string(&map).unwrap();
+                Response::builder()
+                    .status(StatusCode::INTERNAL_SERVER_ERROR)
+                    .header("Content-Type", "application/json")
+                    .body(json_string)
+                    .unwrap()
+            }
+        }
+        Err(_) => {
+            let message = format!("Internal server error");
+            Response::builder()
+                .status(StatusCode::INTERNAL_SERVER_ERROR)
+                .header("Content-Type", "application/json")
+                .body(message)
+                .unwrap()
+        }
     }
 }
 
